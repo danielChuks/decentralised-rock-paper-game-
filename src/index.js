@@ -1,10 +1,10 @@
 import React from 'react';
-import AppViews from './views/AppViews';
-import DeployerViews from './views/DeployerViews';
-import AttacherViews from './views/AttacherViews';
-import {renderDOM, renderView} from './views/render';
+import AppViews from './views/AppViews.js';
+import DeployerViews from './views/DeployerViews.js';
+import AttacherViews from './views/AttacherViews.js';
+import {renderDOM, renderView} from './views/render.js';
 import './index.css';
-import * as backend from './build/index.default.mjs';
+import * as backend from './build/index.main.mjs';
 import {loadStdlib} from '@reach-sh/stdlib';
 const reach = loadStdlib(process.env);
 
@@ -19,7 +19,12 @@ class App extends React.Component {
     this.state = {view: 'ConnectAccount', ...defaults};
   }
   async componentDidMount() {
-    const acc = await reach.getDefaultAccount();
+    let acc;
+    try {
+      acc = await reach.getDefaultAccount();
+    } catch (err) {
+      console.error(err.message)
+    }
     const balAtomic = await reach.balanceOf(acc);
     const bal = reach.formatCurrency(balAtomic, 4);
     this.setState({acc, bal});
